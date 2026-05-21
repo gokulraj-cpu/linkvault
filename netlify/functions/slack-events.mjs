@@ -244,7 +244,7 @@ export default async (req) => {
             metadata.description
           );
 
-          await supabase.from("links").insert({
+          const { error } = await supabase.from("links").insert({
             url,
             title: metadata.title || url,
             description: metadata.description,
@@ -259,6 +259,19 @@ export default async (req) => {
             slack_message_ts: slackEvent.ts,
             tags,
           });
+
+          if (error) {
+            console.error("Supabase insert error:", error);
+            await postSlackReply(
+              slackEvent.channel,
+              slackEvent.ts,
+              `Failed to save link: ${error.message}`
+            );
+            return new Response(JSON.stringify({ error: error.message }), {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
         }
 
         const savedCount = urls.length;
