@@ -55,7 +55,11 @@ async function fetchPageMetadata(url) {
     const timeout = setTimeout(() => controller.abort(), 8000);
     const res = await fetch(url, {
       signal: controller.signal,
-      headers: { "User-Agent": "BecomeLinks Bot/1.0" },
+      redirect: "follow",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; BecomeLinks/1.0; +https://becomelinks.netlify.app)",
+        "Accept": "text/html,application/xhtml+xml",
+      },
     });
     clearTimeout(timeout);
     const html = await res.text();
@@ -82,7 +86,13 @@ async function fetchPageMetadata(url) {
       getMetaContent("og:title") || (titleMatch ? titleMatch[1].trim() : null);
     const description =
       getMetaContent("og:description") || getMetaContent("description");
-    const image = getMetaContent("og:image");
+    let image = getMetaContent("og:image") || getMetaContent("twitter:image") || getMetaContent("twitter:image:src");
+    if (image && !image.startsWith("http")) {
+      const urlObj = new URL(url);
+      image = image.startsWith("/")
+        ? `${urlObj.origin}${image}`
+        : `${urlObj.origin}/${image}`;
+    }
 
     const faviconMatch = html.match(
       /<link[^>]*rel=["'](?:shortcut )?icon["'][^>]*href=["']([^"']+)["']/i
