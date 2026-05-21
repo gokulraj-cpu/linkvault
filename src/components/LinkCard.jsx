@@ -34,9 +34,8 @@ export default function LinkCard({ link, onTagClick }) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block flex-shrink-0 overflow-hidden transition-all duration-300"
+      className="block overflow-hidden transition-all duration-300"
       style={{
-        width: "260px",
         borderRadius: "var(--radius)",
         backgroundColor: "var(--color-surface)",
         border: `1px solid ${hovered ? "var(--color-border)" : "var(--color-border-light)"}`,
