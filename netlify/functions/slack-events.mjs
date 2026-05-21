@@ -55,7 +55,7 @@ async function fetchPageMetadata(url) {
     const timeout = setTimeout(() => controller.abort(), 8000);
     const res = await fetch(url, {
       signal: controller.signal,
-      headers: { "User-Agent": "LinkVault Bot/1.0" },
+      headers: { "User-Agent": "BecomeLinks Bot/1.0" },
     });
     clearTimeout(timeout);
     const html = await res.text();
@@ -279,7 +279,7 @@ export default async (req) => {
         await postSlackReply(
           slackEvent.channel,
           slackEvent.ts,
-          `${emoji} Saved ${savedCount} link${savedCount > 1 ? "s" : ""} to LinkVault!`
+          `${emoji} Saved ${savedCount} link${savedCount > 1 ? "s" : ""} to BecomeLinks!`
         );
       }
     }

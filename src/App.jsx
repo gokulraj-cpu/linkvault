@@ -104,7 +104,7 @@ export default function App() {
       <footer className="border-t border-gray-200 bg-white mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
           <p className="text-xs text-gray-400">
-            LinkVault — Mention @save in Slack to add links
+            BecomeLinks — Mention @save in Slack to add links
           </p>
           <p className="text-xs text-gray-400">
             Powered by AI categorization

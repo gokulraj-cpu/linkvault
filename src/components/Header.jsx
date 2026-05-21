@@ -21,7 +21,7 @@ export default function Header({ total }) {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-                LinkVault
+                BecomeLinks
               </h1>
               <p className="text-xs text-gray-500 -mt-0.5 hidden sm:block">
                 Your team's link directory
