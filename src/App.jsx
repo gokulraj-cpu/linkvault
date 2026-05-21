@@ -24,28 +24,16 @@ export default function App() {
   }, [darkMode]);
 
   const {
-    links,
-    categories,
-    channels,
-    loading,
-    total,
-    page,
-    totalPages,
-    filters,
-    setPage,
-    updateFilters,
+    links, categories, channels, loading,
+    total, page, totalPages, filters,
+    setPage, updateFilters,
   } = useLinks();
 
-  const hasFilters = !!(
-    filters.search ||
-    filters.category ||
-    filters.channel ||
-    filters.tag
-  );
+  const hasFilters = !!(filters.search || filters.category || filters.channel || filters.tag);
 
   return (
     <div
-      className="min-h-screen transition-colors duration-500"
+      className="min-h-screen relative transition-colors duration-300"
       style={{ backgroundColor: "var(--color-bg)" }}
     >
       <Header
@@ -54,7 +42,7 @@ export default function App() {
         onToggleDarkMode={() => setDarkMode(!darkMode)}
       />
 
-      <main className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 py-10 space-y-10">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 space-y-6 pb-4">
         <SearchBar
           value={filters.search}
           onChange={(search) => updateFilters({ search })}
@@ -74,43 +62,16 @@ export default function App() {
           categories={categories}
           onUpdate={updateFilters}
         />
+      </div>
 
+      <div className="pt-2 pb-8">
         {!loading && links.length === 0 ? (
           <EmptyState
             hasFilters={hasFilters}
-            onClear={() =>
-              updateFilters({
-                search: "",
-                category: "",
-                channel: "",
-                tag: "",
-              })
-            }
+            onClear={() => updateFilters({ search: "", category: "", channel: "", tag: "" })}
           />
         ) : (
           <>
-            {!loading && (
-              <div className="animate-fade-in">
-                <p
-                  className="text-xs tracking-widest uppercase"
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontWeight: 500,
-                    color: "var(--color-text-tertiary)",
-                    letterSpacing: "0.1em",
-                  }}
-                >
-                  {hasFilters ? (
-                    <>
-                      {links.length} of {total} links
-                    </>
-                  ) : (
-                    <>{total} links</>
-                  )}
-                </p>
-              </div>
-            )}
-
             <LinkGrid
               links={links}
               loading={loading}
@@ -124,32 +85,15 @@ export default function App() {
             />
           </>
         )}
-      </main>
+      </div>
 
-      <footer
-        className="mt-16 transition-colors duration-500"
-        style={{ borderTop: "1px solid var(--color-border-subtle)" }}
-      >
-        <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 py-8 flex items-center justify-between">
-          <p
-            className="text-xs"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontWeight: 300,
-              color: "var(--color-text-tertiary)",
-            }}
-          >
-            BecomeLinks — Mention @save in Slack to add links
+      <footer style={{ borderTop: "1px solid var(--color-border-light)" }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-6 flex items-center justify-between">
+          <p className="text-[11px]" style={{ color: "var(--color-text-muted)", fontWeight: 300 }}>
+            BecomeLinks
           </p>
-          <p
-            className="text-xs"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontWeight: 300,
-              color: "var(--color-text-tertiary)",
-            }}
-          >
-            Curated by AI
+          <p className="text-[11px]" style={{ color: "var(--color-text-muted)", fontWeight: 300 }}>
+            @save in Slack to add
           </p>
         </div>
       </footer>

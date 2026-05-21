@@ -1,112 +1,52 @@
 export default function EmptyState({ hasFilters, onClear }) {
   if (hasFilters) {
     return (
-      <div className="text-center py-24 animate-fade-in">
-        <p
-          className="text-sm mb-6"
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontWeight: 300,
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          No links match your current filters.
+      <div className="text-center py-20 animate-in">
+        <p className="text-sm" style={{ color: "var(--color-text-secondary)", fontWeight: 300 }}>
+          No links match your filters.
         </p>
         <button
           onClick={onClear}
-          className="inline-flex items-center px-5 py-2.5 text-xs tracking-wide transition-all duration-300"
+          className="mt-4 px-4 py-2 text-xs transition-opacity duration-200 hover:opacity-70"
           style={{
-            fontFamily: "var(--font-sans)",
-            fontWeight: 500,
-            borderRadius: "var(--radius-lg)",
+            borderRadius: "var(--radius-pill)",
             backgroundColor: "var(--color-text)",
             color: "var(--color-bg)",
+            fontWeight: 500,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
         >
-          Clear all filters
+          Clear filters
         </button>
       </div>
     );
   }
 
   return (
-    <div className="text-center py-28 animate-fade-in">
-      <div className="max-w-md mx-auto space-y-8">
-        <div>
-          <h2
-            className="text-3xl mb-4"
-            style={{
-              fontFamily: "var(--font-serif)",
-              color: "var(--color-text)",
-              fontWeight: 400,
-              fontStyle: "italic",
-            }}
-          >
-            Begin curating
-          </h2>
-          <p
-            className="text-sm leading-relaxed"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontWeight: 300,
-              color: "var(--color-text-secondary)",
-            }}
-          >
-            Mention{" "}
-            <span
-              className="inline-flex items-center px-1.5 py-0.5 text-xs"
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontWeight: 500,
-                borderRadius: "var(--radius-sm)",
-                backgroundColor: "var(--color-accent-bg)",
-                color: "var(--color-accent)",
-              }}
-            >
-              @save
-            </span>{" "}
-            with any link in a Slack channel. It will be automatically categorized
-            and added to your team's collection.
-          </p>
-        </div>
-
-        <div
-          className="p-5 text-left"
+    <div className="text-center py-24 animate-in">
+      <h2
+        className="text-2xl mb-3"
+        style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--color-text)" }}
+      >
+        Begin curating
+      </h2>
+      <p
+        className="text-sm max-w-sm mx-auto leading-relaxed"
+        style={{ color: "var(--color-text-secondary)", fontWeight: 300 }}
+      >
+        Mention{" "}
+        <span
+          className="px-1.5 py-0.5 text-xs"
           style={{
-            borderRadius: "var(--radius-lg)",
-            backgroundColor: "var(--color-bg-subtle)",
-            border: "1px solid var(--color-border-subtle)",
+            borderRadius: "4px",
+            backgroundColor: "var(--color-surface-alt)",
+            fontWeight: 500,
+            color: "var(--color-text)",
           }}
         >
-          <p
-            className="text-[11px] uppercase tracking-widest mb-3"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontWeight: 500,
-              color: "var(--color-text-tertiary)",
-            }}
-          >
-            Example
-          </p>
-          <div
-            className="p-3.5"
-            style={{
-              borderRadius: "var(--radius-md)",
-              backgroundColor: "var(--color-bg-elevated)",
-              border: "1px solid var(--color-border-subtle)",
-            }}
-          >
-            <p className="text-sm" style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}>
-              <span style={{ color: "var(--color-accent)", fontWeight: 500 }}>@save</span>{" "}
-              <span style={{ color: "var(--color-text-secondary)", textDecoration: "underline", textUnderlineOffset: "2px" }}>
-                https://example.com/great-article
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
+          @save
+        </span>{" "}
+        with any link in Slack and it will appear here, categorized automatically.
+      </p>
     </div>
   );
 }
