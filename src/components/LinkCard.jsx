@@ -21,6 +21,12 @@ function getDomain(url) {
   }
 }
 
+function getShortTitle(title, url) {
+  const text = title || getDomain(url);
+  const words = text.split(/[\s\-|:]+/).filter(Boolean);
+  return words.slice(0, 3).join(" ");
+}
+
 export default function LinkCard({ link, onTagClick }) {
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -45,7 +51,7 @@ export default function LinkCard({ link, onTagClick }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {link.image && !imgError && (
+      {link.image && !imgError ? (
         <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
           {!imgLoaded && (
             <div className="absolute inset-0" style={{ backgroundColor: "var(--color-surface-alt)" }} />
@@ -58,6 +64,27 @@ export default function LinkCard({ link, onTagClick }) {
             onLoad={() => setImgLoaded(true)}
             onError={() => setImgError(true)}
           />
+        </div>
+      ) : (
+        <div
+          className="relative overflow-hidden flex items-center justify-center"
+          style={{
+            aspectRatio: "16/10",
+            backgroundColor: catColor,
+          }}
+        >
+          <span
+            className="text-white text-center leading-tight px-6"
+            style={{
+              fontFamily: "'Instrument Serif', serif",
+              fontSize: "clamp(18px, 2.5vw, 28px)",
+              fontWeight: 400,
+              opacity: 0.9,
+              textShadow: "0 1px 3px rgba(0,0,0,0.15)",
+            }}
+          >
+            {getShortTitle(link.title, link.url)}
+          </span>
         </div>
       )}
 
