@@ -24,7 +24,23 @@ function getDomain(url) {
 function getShortTitle(title, url) {
   const text = title || getDomain(url);
   const words = text.split(/[\s\-|:]+/).filter(Boolean);
-  return words.slice(0, 3).join(" ");
+  return words.slice(0, 2).join(" ");
+}
+
+function getCategoryLabel(slug) {
+  const labels = {
+    engineering: "ENG",
+    design: "DSN",
+    product: "PRD",
+    marketing: "MKT",
+    documentation: "DOC",
+    "tools-resources": "TLS",
+    "articles-blogs": "ART",
+    "videos-tutorials": "VID",
+    research: "RSH",
+    other: "GEN",
+  };
+  return labels[slug] || "GEN";
 }
 
 export default function LinkCard({ link, onTagClick }) {
@@ -67,24 +83,46 @@ export default function LinkCard({ link, onTagClick }) {
         </div>
       ) : (
         <div
-          className="relative overflow-hidden flex items-center justify-center"
+          className="relative overflow-hidden"
           style={{
             aspectRatio: "16/10",
             backgroundColor: catColor,
           }}
         >
-          <span
-            className="text-white text-center leading-tight px-6"
-            style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontSize: "clamp(18px, 2.5vw, 28px)",
-              fontWeight: 400,
-              opacity: 0.9,
-              textShadow: "0 1px 3px rgba(0,0,0,0.15)",
-            }}
-          >
-            {getShortTitle(link.title, link.url)}
-          </span>
+          <div className="absolute inset-0 flex flex-col justify-between p-4">
+            <div className="flex justify-between items-start">
+              <span
+                className="text-white uppercase tracking-widest"
+                style={{ fontSize: "9px", fontWeight: 500, opacity: 0.6, letterSpacing: "0.15em" }}
+              >
+                {getCategoryLabel(catSlug)}
+              </span>
+              <svg
+                className="transition-all duration-300"
+                style={{
+                  width: 16,
+                  height: 16,
+                  color: "white",
+                  opacity: hovered ? 0.9 : 0,
+                  transform: hovered ? "translate(0,0)" : "translate(-4px,4px)",
+                }}
+                fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+              </svg>
+            </div>
+            <h4
+              className="text-white leading-none"
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: "clamp(24px, 3.5vw, 38px)",
+                fontWeight: 400,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {getShortTitle(link.title, link.url)}
+            </h4>
+          </div>
         </div>
       )}
 
