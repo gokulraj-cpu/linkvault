@@ -26,35 +26,13 @@ function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 60) return `${mins}m`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
+  if (hrs < 24) return `${hrs}h`;
   const days = Math.floor(hrs / 24);
-  if (days < 30) return `${days}d ago`;
+  if (days < 30) return `${days}d`;
   const months = Math.floor(days / 30);
-  return `${months}mo ago`;
-}
-
-function getShortTitle(title, url) {
-  const text = title || getDomain(url);
-  const words = text.split(/[\s\-|:]+/).filter(Boolean);
-  return words.slice(0, 2).join(" ");
-}
-
-function getCategoryLabel(slug) {
-  const labels = {
-    engineering: "ENG",
-    design: "DSN",
-    product: "PRD",
-    marketing: "MKT",
-    documentation: "DOC",
-    "tools-resources": "TLS",
-    "articles-blogs": "ART",
-    "videos-tutorials": "VID",
-    research: "RSH",
-    other: "GEN",
-  };
-  return labels[slug] || "GEN";
+  return `${months}mo`;
 }
 
 export default function LinkCard({ link, onTagClick }) {
@@ -64,6 +42,7 @@ export default function LinkCard({ link, onTagClick }) {
   const category = link.categories;
   const catSlug = category?.slug || "other";
   const catColor = CATEGORY_COLORS[catSlug] || "#94a3b8";
+  const hasImage = link.image && !imgError;
 
   return (
     <a
@@ -72,161 +51,139 @@ export default function LinkCard({ link, onTagClick }) {
       rel="noopener noreferrer"
       className="block overflow-hidden transition-all duration-300"
       style={{
-        borderRadius: "var(--radius)",
-        backgroundColor: "var(--color-surface)",
-        border: `1px solid ${hovered ? "var(--color-border)" : "var(--color-border-light)"}`,
-        transform: hovered ? "translateY(-2px)" : "none",
-        boxShadow: hovered ? "0 8px 24px rgba(0,0,0,0.08)" : "none",
+        borderRadius: "20px",
+        backgroundColor: catColor,
+        transform: hovered ? "translateY(-4px)" : "none",
+        boxShadow: hovered ? "0 12px 32px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.06)",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {link.image && !imgError ? (
-        <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
-          {!imgLoaded && (
-            <div className="absolute inset-0" style={{ backgroundColor: "var(--color-surface-alt)" }} />
-          )}
-          <img
-            src={link.image}
-            alt=""
-            className="w-full h-full object-cover transition-transform duration-500"
-            style={{ transform: hovered ? "scale(1.03)" : "scale(1)", opacity: imgLoaded ? 1 : 0 }}
-            onLoad={() => setImgLoaded(true)}
-            onError={() => setImgError(true)}
-          />
-        </div>
-      ) : (
-        <div
-          className="relative overflow-hidden"
-          style={{
-            aspectRatio: "16/10",
-            backgroundColor: catColor,
-          }}
-        >
-          <div className="absolute inset-0 flex flex-col justify-between p-4">
-            <div className="flex justify-between items-start">
-              <span
-                className="text-white uppercase tracking-widest"
-                style={{ fontSize: "9px", fontWeight: 500, opacity: 0.6, letterSpacing: "0.15em" }}
-              >
-                {getCategoryLabel(catSlug)}
-              </span>
-              <svg
-                className="transition-all duration-300"
-                style={{
-                  width: 16,
-                  height: 16,
-                  color: "white",
-                  opacity: hovered ? 0.9 : 0,
-                  transform: hovered ? "translate(0,0)" : "translate(-4px,4px)",
-                }}
-                fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-              </svg>
-            </div>
-            <h4
-              className="text-white leading-none"
-              style={{
-                fontFamily: "'Instrument Serif', serif",
-                fontSize: "clamp(24px, 3.5vw, 38px)",
-                fontWeight: 400,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {getShortTitle(link.title, link.url)}
-            </h4>
-          </div>
-        </div>
-      )}
-
-      <div className="p-4 space-y-3">
-        <div className="flex items-center justify-between gap-2">
+      <div className="p-4 pb-3 space-y-3">
+        <div className="flex items-center justify-between">
           <span
-            className="text-[10px] uppercase tracking-wider"
-            style={{ color: catColor, fontWeight: 600, letterSpacing: "0.08em" }}
+            className="inline-block px-2.5 py-1 rounded-full text-[10px] uppercase"
+            style={{
+              backgroundColor: "rgba(0,0,0,0.15)",
+              color: "white",
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+            }}
           >
             {category?.name || "Other"}
           </span>
-          <span
-            className="text-[10px]"
-            style={{ color: "var(--color-text-muted)", fontWeight: 300 }}
-          >
-            {timeAgo(link.created_at)}
-          </span>
+          <div className="flex items-center gap-2">
+            {link.shared_by_avatar && (
+              <img
+                src={link.shared_by_avatar}
+                alt=""
+                className="rounded-full"
+                style={{ width: 22, height: 22, border: "2px solid rgba(255,255,255,0.4)" }}
+              />
+            )}
+          </div>
         </div>
 
         <h3
-          className="leading-tight line-clamp-2"
+          className="line-clamp-3"
           style={{
             fontFamily: "'Instrument Serif', serif",
-            fontSize: "18px",
-            color: "var(--color-text)",
+            fontSize: "24px",
+            lineHeight: 1.15,
+            color: "white",
             letterSpacing: "-0.01em",
           }}
         >
           {link.title || getDomain(link.url)}
         </h3>
+      </div>
 
-        {link.description && (
-          <p
-            className="text-[11.5px] leading-relaxed line-clamp-2"
-            style={{ color: "var(--color-text-secondary)", fontWeight: 300 }}
+      {hasImage ? (
+        <div className="px-4 pb-4">
+          <div
+            className="relative overflow-hidden"
+            style={{ borderRadius: "14px", aspectRatio: "16/10" }}
           >
-            {link.description}
-          </p>
-        )}
-
-        <div
-          className="flex items-center justify-between pt-1"
-          style={{ borderTop: "1px solid var(--color-border-light)" }}
-        >
-          <div className="flex items-center gap-2">
-            {link.shared_by_avatar ? (
-              <img
-                src={link.shared_by_avatar}
-                alt=""
-                className="rounded-full"
-                style={{ width: 18, height: 18 }}
-              />
-            ) : (
+            {!imgLoaded && (
               <div
-                className="rounded-full flex items-center justify-center"
-                style={{ width: 18, height: 18, backgroundColor: catColor, fontSize: "9px", color: "white", fontWeight: 600 }}
-              >
-                {(link.shared_by_name || "?")[0].toUpperCase()}
-              </div>
+                className="absolute inset-0"
+                style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+              />
             )}
-            <span className="text-[11px]" style={{ color: "var(--color-text-secondary)" }}>
-              {link.shared_by_name || "someone"}
-            </span>
-            <span className="text-[9px]" style={{ color: "var(--color-text-muted)" }}>
-              via #{link.channel_name}
-            </span>
+            <img
+              src={link.image}
+              alt=""
+              className="w-full h-full object-cover transition-transform duration-500"
+              style={{
+                transform: hovered ? "scale(1.04)" : "scale(1)",
+                opacity: imgLoaded ? 1 : 0,
+              }}
+              onLoad={() => setImgLoaded(true)}
+              onError={() => setImgError(true)}
+            />
           </div>
-          <span className="text-[10px] truncate" style={{ color: "var(--color-text-muted)" }}>
-            {getDomain(link.url)}
-          </span>
         </div>
+      ) : (
+        <div className="px-4 pb-2">
+          {link.description && (
+            <p
+              className="text-[12px] leading-relaxed line-clamp-2"
+              style={{ color: "rgba(255,255,255,0.7)", fontWeight: 300 }}
+            >
+              {link.description}
+            </p>
+          )}
+        </div>
+      )}
 
-        {link.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {link.tags.slice(0, 3).map((tag) => (
+      <div className="px-4 pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {link.tags?.length > 0 && link.tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); onTagClick?.(tag); }}
-                className="text-[10px] px-1.5 py-0.5 cursor-pointer transition-colors duration-200"
+                className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer"
                 style={{
-                  borderRadius: "4px",
-                  backgroundColor: "var(--color-surface-alt)",
-                  color: "var(--color-text-secondary)",
+                  backgroundColor: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  fontWeight: 500,
                 }}
               >
                 {tag}
               </span>
             ))}
+            {(!link.tags || link.tags.length === 0) && (
+              <span
+                className="text-[10px]"
+                style={{ color: "rgba(255,255,255,0.5)" }}
+              >
+                {getDomain(link.url)} · {timeAgo(link.created_at)}
+              </span>
+            )}
           </div>
-        )}
+          <div
+            className="flex items-center justify-center rounded-full transition-all duration-300"
+            style={{
+              width: 32,
+              height: 32,
+              backgroundColor: hovered ? "white" : "rgba(255,255,255,0.2)",
+            }}
+          >
+            <svg
+              style={{
+                width: 14,
+                height: 14,
+                color: hovered ? catColor : "white",
+                transition: "all 0.3s",
+                transform: hovered ? "translate(1px,-1px)" : "none",
+              }}
+              fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+            </svg>
+          </div>
+        </div>
       </div>
     </a>
   );
