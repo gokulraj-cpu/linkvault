@@ -21,6 +21,20 @@ function getDomain(url) {
   }
 }
 
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  return `${months}mo ago`;
+}
+
 function getShortTitle(title, url) {
   const text = title || getDomain(url);
   const words = text.split(/[\s\-|:]+/).filter(Boolean);
@@ -126,37 +140,77 @@ export default function LinkCard({ link, onTagClick }) {
         </div>
       )}
 
-      <div className="p-3.5 space-y-2">
+      <div className="p-4 space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <span
+            className="text-[10px] uppercase tracking-wider"
+            style={{ color: catColor, fontWeight: 600, letterSpacing: "0.08em" }}
+          >
+            {category?.name || "Other"}
+          </span>
+          <span
+            className="text-[10px]"
+            style={{ color: "var(--color-text-muted)", fontWeight: 300 }}
+          >
+            {timeAgo(link.created_at)}
+          </span>
+        </div>
+
         <h3
-          className="text-[13px] font-medium leading-snug line-clamp-2"
-          style={{ color: "var(--color-text)" }}
+          className="leading-tight line-clamp-2"
+          style={{
+            fontFamily: "'Instrument Serif', serif",
+            fontSize: "18px",
+            color: "var(--color-text)",
+            letterSpacing: "-0.01em",
+          }}
         >
           {link.title || getDomain(link.url)}
         </h3>
 
         {link.description && (
           <p
-            className="text-[11px] leading-relaxed line-clamp-3"
+            className="text-[11.5px] leading-relaxed line-clamp-2"
             style={{ color: "var(--color-text-secondary)", fontWeight: 300 }}
           >
             {link.description}
           </p>
         )}
 
-        <div className="flex items-center gap-1 pt-1">
-          <svg className="w-3 h-3 flex-shrink-0" style={{ color: "var(--color-text-muted)" }} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.886-3.497l4.5-4.5a4.5 4.5 0 016.364 6.364l-1.757 1.757" />
-          </svg>
-          <span
-            className="text-[11px] truncate"
-            style={{ color: "var(--color-text-muted)" }}
-          >
+        <div
+          className="flex items-center justify-between pt-1"
+          style={{ borderTop: "1px solid var(--color-border-light)" }}
+        >
+          <div className="flex items-center gap-2">
+            {link.shared_by_avatar ? (
+              <img
+                src={link.shared_by_avatar}
+                alt=""
+                className="rounded-full"
+                style={{ width: 18, height: 18 }}
+              />
+            ) : (
+              <div
+                className="rounded-full flex items-center justify-center"
+                style={{ width: 18, height: 18, backgroundColor: catColor, fontSize: "9px", color: "white", fontWeight: 600 }}
+              >
+                {(link.shared_by_name || "?")[0].toUpperCase()}
+              </div>
+            )}
+            <span className="text-[11px]" style={{ color: "var(--color-text-secondary)" }}>
+              {link.shared_by_name || "someone"}
+            </span>
+            <span className="text-[9px]" style={{ color: "var(--color-text-muted)" }}>
+              via #{link.channel_name}
+            </span>
+          </div>
+          <span className="text-[10px] truncate" style={{ color: "var(--color-text-muted)" }}>
             {getDomain(link.url)}
           </span>
         </div>
 
         {link.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-0.5">
+          <div className="flex flex-wrap gap-1">
             {link.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
