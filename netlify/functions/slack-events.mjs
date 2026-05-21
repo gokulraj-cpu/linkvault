@@ -205,6 +205,13 @@ export default async (req) => {
     return new Response("Method not allowed", { status: 405 });
   }
 
+  const retryNum = req.headers.get("x-slack-retry-num");
+  if (retryNum) {
+    return new Response(JSON.stringify({ ok: true }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const body = await req.text();
   const payload = JSON.parse(body);
 
@@ -237,6 +244,15 @@ export default async (req) => {
         ]);
 
         for (const url of urls) {
+          const { data: existing } = await supabase
+            .from("links")
+            .select("id")
+            .eq("url", url)
+            .eq("slack_message_ts", slackEvent.ts)
+            .maybeSingle();
+
+          if (existing) continue;
+
           const metadata = await fetchPageMetadata(url);
           const { categoryId, tags } = await categorizeLink(
             url,
