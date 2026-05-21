@@ -13,38 +13,34 @@ export default function Pagination({ page, totalPages, onPageChange }) {
     pages.push(i);
   }
 
+  const btnStyle = {
+    fontFamily: "var(--font-sans)",
+    borderRadius: "var(--radius-md)",
+  };
+
   return (
-    <div className="flex items-center justify-center gap-1 mt-8">
+    <div className="flex items-center justify-center gap-1 mt-12 mb-4">
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
-        className="p-2 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="p-2.5 text-sm transition-all duration-200 disabled:opacity-20 disabled:cursor-not-allowed"
+        style={{
+          ...btnStyle,
+          color: "var(--color-text-secondary)",
+        }}
+        onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "var(--color-hover)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
       >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15.75 19.5L8.25 12l7.5-7.5"
-          />
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
       </button>
 
       {start > 1 && (
         <>
-          <button
-            onClick={() => onPageChange(1)}
-            className="w-10 h-10 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            1
-          </button>
+          <PageBtn page={1} current={page} onClick={onPageChange} style={btnStyle} />
           {start > 2 && (
-            <span className="w-10 h-10 flex items-center justify-center text-gray-400">
+            <span className="w-9 h-9 flex items-center justify-center" style={{ color: "var(--color-text-tertiary)" }}>
               ...
             </span>
           )}
@@ -52,54 +48,55 @@ export default function Pagination({ page, totalPages, onPageChange }) {
       )}
 
       {pages.map((p) => (
-        <button
-          key={p}
-          onClick={() => onPageChange(p)}
-          className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${
-            p === page
-              ? "bg-indigo-600 text-white"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          {p}
-        </button>
+        <PageBtn key={p} page={p} current={page} onClick={onPageChange} style={btnStyle} />
       ))}
 
       {end < totalPages && (
         <>
           {end < totalPages - 1 && (
-            <span className="w-10 h-10 flex items-center justify-center text-gray-400">
+            <span className="w-9 h-9 flex items-center justify-center" style={{ color: "var(--color-text-tertiary)" }}>
               ...
             </span>
           )}
-          <button
-            onClick={() => onPageChange(totalPages)}
-            className="w-10 h-10 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            {totalPages}
-          </button>
+          <PageBtn page={totalPages} current={page} onClick={onPageChange} style={btnStyle} />
         </>
       )}
 
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
-        className="p-2 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="p-2.5 text-sm transition-all duration-200 disabled:opacity-20 disabled:cursor-not-allowed"
+        style={{
+          ...btnStyle,
+          color: "var(--color-text-secondary)",
+        }}
+        onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "var(--color-hover)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
       >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M8.25 4.5l7.5 7.5-7.5 7.5"
-          />
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>
     </div>
+  );
+}
+
+function PageBtn({ page, current, onClick, style }) {
+  const isActive = page === current;
+  return (
+    <button
+      onClick={() => onClick(page)}
+      className="w-9 h-9 text-xs transition-all duration-200"
+      style={{
+        ...style,
+        fontWeight: isActive ? 500 : 400,
+        backgroundColor: isActive ? "var(--color-text)" : "transparent",
+        color: isActive ? "var(--color-bg)" : "var(--color-text-secondary)",
+      }}
+      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = "var(--color-hover)"; }}
+      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = "transparent"; }}
+    >
+      {page}
+    </button>
   );
 }

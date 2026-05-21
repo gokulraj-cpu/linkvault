@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function timeAgo(dateStr) {
   const now = new Date();
   const date = new Date(dateStr);
@@ -23,7 +25,10 @@ function getDomain(url) {
   }
 }
 
-export default function LinkCard({ link, onTagClick }) {
+export default function LinkCard({ link, onTagClick, index = 0 }) {
+  const [hovered, setHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const category = link.categories;
 
   return (
@@ -31,49 +36,89 @@ export default function LinkCard({ link, onTagClick }) {
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-200 hover:-translate-y-0.5"
+      className="group block overflow-hidden animate-stagger"
+      style={{
+        animationDelay: `${index * 60}ms`,
+        borderRadius: "var(--radius-lg)",
+        backgroundColor: "var(--color-bg-elevated)",
+        border: `1px solid ${hovered ? "var(--color-border)" : "var(--color-border-subtle)"}`,
+        boxShadow: hovered ? "var(--shadow-hover)" : "var(--shadow-subtle)",
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      {link.image && (
-        <div className="aspect-[2/1] overflow-hidden bg-gray-100">
+      {link.image && !imageError && (
+        <div className="relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
+          {!imageLoaded && (
+            <div className="absolute inset-0 skeleton" />
+          )}
           <img
             src={link.image}
             alt=""
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              e.target.parentElement.style.display = "none";
+            className="w-full h-full object-cover transition-transform duration-700"
+            style={{
+              transform: hovered ? "scale(1.03)" : "scale(1)",
+              opacity: imageLoaded ? 1 : 0,
+              transition: "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease",
+            }}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
+          />
+          <div
+            className="absolute inset-0 transition-opacity duration-500"
+            style={{
+              background: "linear-gradient(to top, rgba(0,0,0,0.06) 0%, transparent 40%)",
+              opacity: hovered ? 1 : 0,
             }}
           />
         </div>
       )}
 
-      <div className="p-4">
+      <div className="p-5 space-y-3">
         <div className="flex items-start gap-3">
           <img
             src={link.favicon}
             alt=""
-            className="w-5 h-5 rounded mt-0.5 flex-shrink-0"
-            onError={(e) => {
-              e.target.style.display = "none";
-            }}
+            className="w-4 h-4 rounded mt-1 flex-shrink-0 opacity-60"
+            onError={(e) => { e.target.style.display = "none"; }}
           />
           <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+            <h3
+              className="text-sm leading-snug line-clamp-2 transition-colors duration-300"
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontWeight: 500,
+                color: "var(--color-text)",
+              }}
+            >
               {link.title || getDomain(link.url)}
             </h3>
-            <p className="text-xs text-gray-400 mt-0.5 truncate">
+            <p
+              className="text-xs mt-1 truncate"
+              style={{ color: "var(--color-text-tertiary)" }}
+            >
               {getDomain(link.url)}
             </p>
           </div>
         </div>
 
         {link.description && (
-          <p className="mt-2.5 text-sm text-gray-500 line-clamp-2 leading-relaxed">
+          <p
+            className="text-xs leading-relaxed line-clamp-2"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontWeight: 300,
+              color: "var(--color-text-secondary)",
+            }}
+          >
             {link.description}
           </p>
         )}
 
         {link.tags?.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5 pt-1">
             {link.tags.map((tag) => (
               <span
                 key={tag}
@@ -82,7 +127,22 @@ export default function LinkCard({ link, onTagClick }) {
                   e.stopPropagation();
                   onTagClick?.(tag);
                 }}
-                className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer transition-colors"
+                className="inline-flex items-center px-2 py-0.5 text-[11px] tracking-wide cursor-pointer transition-all duration-200"
+                style={{
+                  borderRadius: "var(--radius-sm)",
+                  backgroundColor: "var(--color-accent-bg)",
+                  color: "var(--color-accent)",
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: 400,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--color-accent)";
+                  e.currentTarget.style.color = "white";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--color-accent-bg)";
+                  e.currentTarget.style.color = "var(--color-accent)";
+                }}
               >
                 {tag}
               </span>
@@ -90,41 +150,57 @@ export default function LinkCard({ link, onTagClick }) {
           </div>
         )}
 
-        <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
+        <div
+          className="flex items-center justify-between pt-3"
+          style={{ borderTop: "1px solid var(--color-border-subtle)" }}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
             {link.shared_by_avatar ? (
               <img
                 src={link.shared_by_avatar}
                 alt=""
                 className="w-5 h-5 rounded-full flex-shrink-0"
+                style={{ opacity: 0.8 }}
               />
             ) : (
-              <div className="w-5 h-5 rounded-full bg-gray-200 flex-shrink-0" />
+              <div
+                className="w-5 h-5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: "var(--color-bg-muted)" }}
+              />
             )}
-            <span className="text-xs text-gray-500 truncate">
+            <span
+              className="text-xs truncate"
+              style={{ color: "var(--color-text-tertiary)", fontWeight: 400 }}
+            >
               {link.shared_by_name}
             </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-xs text-gray-400 flex items-center gap-1 flex-shrink-0">
-              <span className="text-gray-300">#</span>
+            <span style={{ color: "var(--color-border)" }}>·</span>
+            <span
+              className="text-xs flex items-center gap-0.5 flex-shrink-0"
+              style={{ color: "var(--color-text-tertiary)" }}
+            >
+              <span style={{ opacity: 0.5 }}>#</span>
               {link.channel_name}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2.5 flex-shrink-0">
             {category && (
               <span
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                className="text-[10px] tracking-wide uppercase"
                 style={{
-                  backgroundColor: `${category.color}15`,
-                  color: category.color,
+                  color: "var(--color-accent-soft)",
+                  fontWeight: 500,
+                  letterSpacing: "0.05em",
                 }}
               >
-                <span className="text-[10px]">{category.icon}</span>
                 {category.name}
               </span>
             )}
-            <span className="text-xs text-gray-400">
+            <span
+              className="text-[11px]"
+              style={{ color: "var(--color-text-tertiary)" }}
+            >
               {timeAgo(link.created_at)}
             </span>
           </div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 export default function SearchBar({ value, onChange }) {
   const [local, setLocal] = useState(value);
+  const [focused, setFocused] = useState(false);
   const debounceRef = useRef(null);
 
   useEffect(() => {
@@ -21,13 +22,19 @@ export default function SearchBar({ value, onChange }) {
   };
 
   return (
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+    <div
+      className="relative transition-all duration-500"
+      style={{
+        transform: focused ? "scale(1.005)" : "scale(1)",
+      }}
+    >
+      <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
         <svg
-          className="h-5 w-5 text-gray-400"
+          className="h-4 w-4 transition-colors duration-300"
+          style={{ color: focused ? "var(--color-accent)" : "var(--color-text-tertiary)" }}
           fill="none"
           viewBox="0 0 24 24"
-          strokeWidth={2}
+          strokeWidth={1.5}
           stroke="currentColor"
         >
           <path
@@ -41,26 +48,32 @@ export default function SearchBar({ value, onChange }) {
         type="text"
         value={local}
         onChange={handleChange}
-        placeholder="Search links by title, URL, channel, or person..."
-        className="block w-full pl-12 pr-12 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-shadow hover:shadow-md"
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder="Search by title, URL, channel, or person..."
+        className="block w-full pl-12 pr-12 py-4 text-sm tracking-wide outline-none transition-all duration-300"
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontWeight: 300,
+          backgroundColor: "var(--color-bg-elevated)",
+          color: "var(--color-text)",
+          borderRadius: "var(--radius-xl)",
+          border: `1px solid ${focused ? "var(--color-accent-soft)" : "var(--color-border)"}`,
+          boxShadow: focused
+            ? "0 0 0 3px var(--color-accent-bg), var(--shadow-card)"
+            : "var(--shadow-subtle)",
+        }}
       />
       {local && (
         <button
           onClick={handleClear}
-          className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+          className="absolute inset-y-0 right-0 pr-5 flex items-center transition-colors duration-200"
+          style={{ color: "var(--color-text-tertiary)" }}
+          onMouseEnter={(e) => e.currentTarget.style.color = "var(--color-text-secondary)"}
+          onMouseLeave={(e) => e.currentTarget.style.color = "var(--color-text-tertiary)"}
         >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       )}

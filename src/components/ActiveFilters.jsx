@@ -29,7 +29,7 @@ export default function ActiveFilters({ filters, categories, onUpdate }) {
   if (filters.tag) {
     activeFilters.push({
       key: "tag",
-      label: `tag: ${filters.tag}`,
+      label: filters.tag,
       onRemove: () => onUpdate({ tag: "" }),
     });
   }
@@ -37,40 +37,49 @@ export default function ActiveFilters({ filters, categories, onUpdate }) {
   if (activeFilters.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-xs font-medium text-gray-500">Active filters:</span>
+    <div className="flex items-center gap-2.5 flex-wrap animate-fade-in">
+      <span
+        className="text-[11px] tracking-widest uppercase"
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontWeight: 500,
+          color: "var(--color-text-tertiary)",
+        }}
+      >
+        Filtered by
+      </span>
       {activeFilters.map((f) => (
         <span
           key={f.key}
-          className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-lg"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all duration-200"
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontWeight: 400,
+            borderRadius: "var(--radius-md)",
+            backgroundColor: "var(--color-accent-bg)",
+            color: "var(--color-accent)",
+          }}
         >
           {f.label}
           <button
             onClick={f.onRemove}
-            className="ml-0.5 hover:text-indigo-900 transition-colors"
+            className="ml-0.5 transition-opacity duration-200 hover:opacity-60"
           >
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </span>
       ))}
       {activeFilters.length > 1 && (
         <button
-          onClick={() =>
-            onUpdate({ search: "", category: "", channel: "", tag: "" })
-          }
-          className="text-xs text-gray-400 hover:text-gray-600 underline transition-colors"
+          onClick={() => onUpdate({ search: "", category: "", channel: "", tag: "" })}
+          className="text-xs underline underline-offset-2 transition-opacity duration-200 hover:opacity-60"
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontWeight: 400,
+            color: "var(--color-text-tertiary)",
+          }}
         >
           Clear all
         </button>
